@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Home</title>
+    <link rel="stylesheet" href="{% static 'hotel/styles.css' %}">
+</head>
+<body>
+    <h1>Добро пожаловать в наш отель!</h1>
+
+    <!-- Форма быстрого подбора -->
+    <h2>Быстрая панель подбора комнат</h2>
+    <form method="get">
+        {{ form.as_p }}
+        <button type="submit">Найти комнаты</button>
+    </form>
+
+    <!-- Список доступных комнат -->
+    <h2>Доступные комнаты</h2>
+    <ul>
+        {% for room in rooms %}
+            <li>
+                {{ room.room_number }} - {{ room.room_type }}
+                (Цена: ${{ room.price_per_night }})
+            </li>
+        {% empty %}
+            <li>Нет доступных комнат.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Кнопка для просмотра всех комнат -->
+    <a href="{% url 'room_list' %}"><button>Посмотреть все комнаты</button></a>
+</body>
+</html>

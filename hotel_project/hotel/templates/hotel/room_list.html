@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Rooms</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'hotel/styles.css' %}">
+</head>
+<body>
+    <h1>Все комнаты </h1>
+    <ul>
+        {% for room in rooms %}
+            <li>
+                {{ room.room_type }} - {{ room.room_number }}
+                (Price: ${{ room.price_per_night }})
+            </li>
+        {% empty %}
+            <li>No rooms available.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
