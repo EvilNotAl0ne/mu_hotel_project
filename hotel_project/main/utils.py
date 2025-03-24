@@ -1,10 +1,15 @@
+from django.contrib.messages.context_processors import messages
 from django.core.mail import send_mail
 from django.conf import settings
+from django.urls import reverse
+
 
 # Отправляет электронное письмо пользователю с инструкцией по отмене бронирования
 def send_cancel_email(booking):
-    subject = "Отмена бронирования"
-    message = f"Для отмены бронирования перейдите по ссылке: http://127.0.0.1:8000/cancel/{booking.cancel_token}/"
-    from_email = settings.DEFAULT_FROM_EMAIL
-    recipient_list = [booking.user.email] if booking.user else ["guest@example.com"]
-    send_mail(subject, message, from_email, recipient_list)
+    # Генерируем URL для страницы подтверждения
+    cancel_url = reverse('cancel_booking_by_token', args=[booking.cancel_token])
+    full_url = f"http://127.0.0.1:8000{cancel_url}"
+
+    # Формируем сообщение
+    message = f"Для отмены бронирования перейдите по ссылке: {full_url}"
+    print(message)  # Чисто для тестов выводим в терминал

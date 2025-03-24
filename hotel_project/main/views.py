@@ -84,8 +84,13 @@ def cancel_booking(request, booking_id):
     return redirect('profile')
 
 def cancel_booking_by_token(request, token):
-    print(f"Received token from URL: {token}")  # Отладочный вывод (будет приходить токен в терминал из URL)
+    # Ищем бронирование по токену
     booking = get_object_or_404(Booking, cancel_token=token)
-    booking.delete()  # Удаляем бронирование
-    messages.success(request, "Бронирование успешно отменено.")
-    return redirect('home')  # Перенаправляем на главную страницу
+
+    if request.method == 'POST':
+        # Если пользователь подтвердил отмену
+        booking.delete()
+        messages.success(request, "Бронирование успешно отменено!")
+        return redirect('home')  # Перенаправляем на главную страницу
+        # Если метод GET отображаем страницу подтверждения
+    return render(request, 'main/confirm_cancel.html', {'booking': booking})
