@@ -1,0 +1,68 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+
+<h2>Профиль пользователя</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <h3>Данные пользователя</h3>
+    {{ user_form.as_p }}
+
+    <h3>Дополнительная информация</h3>
+    {{ profile_form.as_p }}
+
+    <button type="submit">Сохранить изменения</button>
+</form>
+
+<h2>Мои бронирования</h2>
+
+{% if bookings %}
+<ul>
+    {% for booking in bookings %}
+    <li>
+        {{ booking.room.name }} ({{ booking.check_in }} - {{ booking.check_out }}, Гостей: {{ booking.guests }})
+        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal{{ booking.id }}">
+            Отменить
+        </button>
+
+        <!-- Модальное окно для подтверждения -->
+        <div class="modal fade" id="cancelModal{{ booking.id }}" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelModalLabel">Подтвердите отмену</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверены, что хотите отменить бронирование комнаты "{{ booking.room.name }}"?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <form method="post" action="{% url 'cancel_booking' booking.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Да, отменить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>У вас нет бронирований.</p>
+{% endif %}
+
+<a href="{% url 'home' %}">Вернуться на главную</a>
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

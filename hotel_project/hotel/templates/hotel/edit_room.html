@@ -1,0 +1,15 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Список комнат{% endblock %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Сохранить</button>
+</form>
+
+<a href="{% url 'room_list' %}">Назад к списку комнат</a>
+
+{% endblock %}

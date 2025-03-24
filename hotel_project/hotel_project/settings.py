@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+
+from django.conf.global_settings import MEDIA_URL, MEDIA_ROOT
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,7 +51,8 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',  # Требуется для хранения сообщений
+    'django.contrib.messages.middleware.MessageMiddleware',  # Требуется для работы с сообщениями
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -57,14 +61,14 @@ ROOT_URLCONF = 'hotel_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'], # указывает путь к нашему шаблону
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.messages.context_processors.messages',  # Требуется для работы с сообщениями
             ],
         },
     },
@@ -124,3 +128,17 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Настройка для отображение фота
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Настройки для отправки писем
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Для тестов локального письма
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Используем SMTP
+EMAIL_HOST = 'smtp.your-email-provider.com'  # SMTP-сервер вашего почтового провайдера
+EMAIL_PORT = 587  # Порт SMTP
+EMAIL_USE_TLS = True  # Использовать TLS
+EMAIL_HOST_USER = 'your-email@example.com'  # Ваш email
+EMAIL_HOST_PASSWORD = 'your-email-password'  # Пароль от email
+DEFAULT_FROM_EMAIL = 'your-email@example.com'  # Email отправителя

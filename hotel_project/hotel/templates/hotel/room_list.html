@@ -1,23 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Rooms</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'hotel/styles.css' %}">
-</head>
-<body>
-    <h1>Все комнаты </h1>
-    <ul>
-        {% for room in rooms %}
-            <li>
-                {{ room.room_type }} - {{ room.room_number }}
-                (Price: ${{ room.price_per_night }})
-            </li>
-        {% empty %}
-            <li>No rooms available.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'main/base.html' %}
+
+{% block title %}Список комнат{% endblock %}
+
+{% block content %}
+
+<h1>Список комнат</h1>
+
+{% if rooms %}
+<ul>
+    {% for room in rooms %}
+    <li>
+        {{ room.name }}
+        <br>
+        {% if room.image %}
+            <img src="{{ room.image.url }}" alt="{{ room.name }}" style="max-width: 200px;">
+        {% else %}
+            <br>
+            <em>Изображение отсутствует </em>
+        {% endif %}
+        {{ room.room_type }}<br>
+        {% if user.is_staff %}
+        <br>
+        <a href="{% url 'edit_room' room.pk %}">Редактировать</a><br>
+        <a href="{% url 'delete_room' room.pk %}">Удалить</a>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Нет доступных комнат.</p>
+{% endif %}
+
+{% if user.is_staff %}
+<a href="{% url 'add_room' %}">Добавить комнату</a>
+{% endif %}
+{% endblock %}

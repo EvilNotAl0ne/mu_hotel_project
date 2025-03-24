@@ -1,0 +1,33 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+
+<h1>Доступные номера</h1>
+
+<p>Дата заезда: {{ check_in }}</p>
+<p>Дата выезда: {{ check_out }}</p>
+<p>Количество гостей: {{ guests }}</p>
+
+{% if available_rooms %}
+<ul>
+    {% for room in available_rooms %}
+    <li>
+        {{ room.name }} (Вместимость: {{ room.capacity }})
+        {% if room.image %}
+            <br>
+            <img src="{{ room.image.url }}" alt="{{ room.name }}" style="max-width: 200px;">
+        {% endif %}
+        <br>
+        <a href="{% url 'book_room' room.id check_in check_out guests %}" class="btn btn-primary">Забронировать</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Нет доступных номеров на выбранные даты.</p>
+{% endif %}
+
+<a href="{% url 'home' %}">Вернуться к поиску</a>
+
+{% endblock %}
