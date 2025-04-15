@@ -1,56 +1,71 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
-from hotel.models import Room
+from django.shortcuts import render, get_object_or_404
+from .models import RoomCategory, Room
+from datetime import datetime, timedelta
 from main.models import Booking
-from .forms import RoomForm
-from datetime import date, timedelta
 
-# Функция проверяет пользователь админ или обычный
-def is_admin(user):
-    return user.is_staff  # Если да, то дает доступ только админам
 
 # Функция просмотра комнат (доступ есть у всех)
-@login_required
 def room_list(request):
-    # Получаем текущие даты (например, сегодняшнюю дату и +7 дней)
-    today = date.today()
-    future_date = today + timedelta(days=100)
+    categories = RoomCategory.objects.all()
+    return render(request, 'hotel/room_list.html', {'categories': categories})
 
-    # Получаем доступные комнаты
-    available_rooms = Booking.get_available_rooms(today, future_date)
+def book_room(request, room_id, check_in, check_out, guests):
+    # Получаем комнату по ID
+    room = get_object_or_404(Room, pk=room_id)
 
-    return render(request, 'hotel/room_list.html', {'rooms': available_rooms})
+    # Передаем данные в шаблон
+    return render(request, 'hotel/book_room.html', {
+        'room': room,
+        'check_in': check_in,
+        'check_out': check_out,
+        'guests': guests,
+    })
 
-# Функция добавления комнат(доступ только админ)
-@user_passes_test(is_admin)
-def add_room(request):
-    if request.method == 'POST':  #  Если метод POST значит пользователь оправил заполненную форму
-        form = RoomForm(request.POST, request.FILES)
-        if form.is_valid():  # Если форма валидна
-            form.save()  # То сохраняем в БД
-            return redirect('room_list')  # Отправляем обратно к списку
-    else:
-        form = RoomForm()  # Если запрос GET отправляем пустую форму
-    return render(request, 'hotel/add_room.html', {'form': form})
+def category_detail(request, pk):
+    category = get_object_or_404(RoomCategory, pk=pk)
 
-# Функция редактирования комнат(доступ только админ)
-@user_passes_test(is_admin)
-def edit_room(request, pk):
-    room = get_object_or_404(Room, pk=pk)  # Проверка существует это комната или нет
-    if request.method == 'POST':
-        form = RoomForm(request.POST, request.FILES, instance=room)  # instance связь с текущей комнатой
-        if form.is_valid():
-            form.save()
-            return redirect('room_list')
-    else:
-        form = RoomForm(instance=room)
-    return  render(request, 'hotel/edit_room.html', {'form': form})
+    today = datetime.today().date()
 
-# Функция удаления комнат(доступ только админ)
-@user_passes_test(is_admin)
-def delete_room(request, pk):
-    room = get_object_or_404(Room, pk=pk)
-    if request.method == 'POST':
-        room.delete()
-        return redirect('room_list')
-    return render(request, 'hotel/delete_room.html', {'room': room})
+    # Устанавливаем значения по умолчанию
+    check_in = request.GET.get('check_in', today)
+    check_out = request.GET.get('check_out', today + timedelta(days=1))  # Завтрашняя дата
+    guests = int(request.GET.get('guests', 1))  # По умолчанию 1 гость
+
+    # Преобразуем строки в объекты datetime.date
+    try:
+        # Проверяем, является ли check_in строкой перед преобразованием
+        if isinstance(check_in, str):
+            check_in = datetime.strptime(check_in, '%Y-%m-%d').date()
+        else:
+            check_in = today  # Если check_in уже является датой, используем его
+
+        # Проверяем, является ли check_out строкой перед преобразованием
+        if isinstance(check_out, str):
+            check_out = datetime.strptime(check_out, '%Y-%m-%d').date()
+        else:
+            check_out = today + timedelta(days=1)  # Если check_out уже является датой, используем его
+
+    except ValueError:
+        # Если формат даты неверный, используем значения по умолчанию
+        check_in = today
+        check_out = today + timedelta(days=1)
+
+    # Фильтруем комнаты по категории и вместимости
+    rooms = category.rooms.filter(is_available=True, capacity__gte=int(guests))
+
+    # Исключаем забронированные комнаты
+    booked_rooms = Booking.objects.filter(
+        check_in__lt=check_out,
+        check_out__gt=check_in
+    ).values_list('room_id', flat=True)
+    available_rooms = rooms.exclude(id__in=booked_rooms)
+
+    return render(request, 'hotel/category_detail.html', {
+        'category': category,
+        'rooms': available_rooms,  # Передаем только доступные комнаты
+        'check_in': check_in,
+        'check_out': check_out,
+        'guests': guests,
+    })
+
+

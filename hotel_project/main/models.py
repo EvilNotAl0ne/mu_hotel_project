@@ -11,10 +11,10 @@ class Booking(models.Model):  # Эта модель будет представ�
     user = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True)  # Это внешний ключ, который связывает бронирование с моделью User
     cancel_token = models.CharField(max_length=36, unique=True, default=uuid.uuid4, editable=False)  # Хранит уникальный токен для отмены бронирования
     #  Хранить дополнительную информацию о госте
-    first_name = models.CharField(max_length=30, blank=True, null=True)
-    last_name = models.CharField(max_length=30, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
-    phone = models.CharField(max_length=13, blank=True, null=True)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    email = models.EmailField()
+    phone = models.CharField(max_length=13)
 
     def __str__(self):
         return f"{self.room.name} ({self.check_in} - {self.check_out})"
@@ -36,3 +36,4 @@ class Booking(models.Model):  # Эта модель будет представ�
             check_out__gt=check_in
         ).values_list('room_id', flat=True)
         return Room.objects.exclude(id__in=booked_rooms)
+

@@ -1,0 +1,23 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Бронирование комнаты {{ room.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Бронирование комнаты</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ room.name }}</h5>
+            <p class="card-text"><strong>Дата заезда:</strong> {{ check_in }}</p>
+            <p class="card-text"><strong>Дата выезда:</strong> {{ check_out }}</p>
+            <p class="card-text"><strong>Количество гостей:</strong> {{ guests }}</p>
+        </div>
+    </div>
+
+    <form method="post" action="{% url 'confirm_booking' room.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Подтвердить бронирование</button>
+    </form>
+</div>
+{% endblock %}

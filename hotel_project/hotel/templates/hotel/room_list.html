@@ -1,37 +1,99 @@
 {% extends 'main/base.html' %}
 
-{% block title %}Список комнат{% endblock %}
+{% block title %}Категории комнат{% endblock %}
 
 {% block content %}
+<!-- Секция: Заголовок -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">Категории номеров</h1>
+        <p class="lead">Выберите идеальную категорию для вашего отдыха</p>
+    </div>
+</section>
 
-<h1>Список комнат</h1>
+<!-- Секция: Список категорий -->
+<section class="py-5">
+    <div class="container">
+        {% if categories %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for category in categories %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <!-- Изображения категории -->
+                            <div id="carousel{{ category.pk }}" class="carousel slide" data-bs-ride="false">
+                                <div class="carousel-inner">
+                                    {% for image in category.images.all %}
+                                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                            <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ category.name }}" style="height: 250px; object-fit: cover;">
+                                        </div>
+                                    {% empty %}
+                                        <div class="carousel-item active">
+                                            <img src="https://via.placeholder.com/400x250?text=No+Image" class="d-block w-100" alt="{{ category.name }}">
+                                        </div>
+                                    {% endfor %}
+                                </div>
 
-{% if rooms %}
-<ul>
-    {% for room in rooms %}
-    <li>
-        {{ room.name }}
-        <br>
-        {% if room.image %}
-            <img src="{{ room.image.url }}" alt="{{ room.name }}" style="max-width: 200px;">
+                                <!-- Кнопки навигации -->
+                                {% if category.images.count > 1 %}
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ category.pk }}" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Предыдущий</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ category.pk }}" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Следующий</span>
+                                    </button>
+                                {% endif %}
+                            </div>
+
+                            <!-- Информация о категории -->
+                            <div class="card-body">
+                                <h5 class="card-title">{{ category.name }}</h5>
+                                <p class="card-text">
+                                    {% if category.description %}
+                                        {{ category.description|truncatewords:20 }}
+                                    {% else %}
+                                        <em>Описание отсутствует</em>
+                                    {% endif %}
+                                </p>
+
+                                <!-- Удобства -->
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    {% with amenities=category.rooms.first.amenities.split %}
+                                        {% if amenities %}
+                                            {% for amenity in amenities %}
+                                                <span class="badge bg-primary">
+                                                    {% if "кровать" in amenity|lower %}
+                                                        <i class="fas fa-bed me-1"></i>
+                                                    {% elif "wi-fi" in amenity|lower %}
+                                                        <i class="fas fa-wifi me-1"></i>
+                                                    {% elif "телевизор" in amenity|lower %}
+                                                        <i class="fas fa-tv me-1"></i>
+                                                    {% else %}
+                                                        {{ amenity }}
+                                                    {% endif %}
+                                                </span>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">Нет данных</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+
+                            <!-- Кнопка "Подробнее" -->
+                            <div class="card-footer text-end">
+                                <a href="{% url 'category_detail' category.pk %}" class="btn btn-primary">Подробнее</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-            <br>
-            <em>Изображение отсутствует </em>
+            <div class="alert alert-info text-center" role="alert">
+                Нет доступных категорий.
+            </div>
         {% endif %}
-        {{ room.room_type }}<br>
-        {% if user.is_staff %}
-        <br>
-        <a href="{% url 'edit_room' room.pk %}">Редактировать</a><br>
-        <a href="{% url 'delete_room' room.pk %}">Удалить</a>
-        {% endif %}
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>Нет доступных комнат.</p>
-{% endif %}
-
-{% if user.is_staff %}
-<a href="{% url 'add_room' %}">Добавить комнату</a>
-{% endif %}
+    </div>
+</section>
 {% endblock %}

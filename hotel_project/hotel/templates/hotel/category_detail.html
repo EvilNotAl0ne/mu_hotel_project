@@ -1,0 +1,119 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Категория: {{ category.name }}{% endblock %}
+
+{% block content %}
+<!-- Заголовок -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">{{ category.name }}</h1>
+        <p class="lead text-muted">
+            {% if category.description %}
+                {{ category.description }}
+            {% else %}
+                Эта категория предлагает комфорт и стиль для вашего отдыха.
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+<!-- Форма для выбора дат и количества гостей -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Выберите даты и количество гостей</h2>
+        <form method="get" class="row g-3 justify-content-center">
+            <div class="col-md-4">
+                <label for="check_in" class="form-label">Дата заезда</label>
+                <input type="date" id="check_in" name="check_in" class="form-control form-control-lg" value="{{ check_in|date:'Y-m-d' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label for="check_out" class="form-label">Дата выезда</label>
+                <input type="date" id="check_out" name="check_out" class="form-control form-control-lg" value="{{ check_out|date:'Y-m-d' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label for="guests" class="form-label">Количество гостей</label>
+                <input type="number" id="guests" name="guests" class="form-control form-control-lg" value="{{ guests }}" min="1" required>
+            </div>
+            <div class="col-12 text-center">
+                <button type="submit" class="btn btn-primary btn-lg mt-3">Показать доступные номера</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Список доступных комнат -->
+<section class="py-5">
+    <div class="container">
+        {% if rooms %}
+            <h2 class="text-center mb-5">Доступные номера</h2>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for room in rooms %}
+                    <div class="col">
+                        <div class="card h-100 shadow border-0 rounded-4 overflow-hidden">
+                            <!-- Карусель изображений -->
+                            <div id="carouselRoom{{ room.pk }}" class="carousel slide" data-bs-ride="false">
+                                <div class="carousel-inner">
+                                    {% for image in room.images.all %}
+                                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                            <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ room.name }}" style="height: 250px; object-fit: cover;">
+                                        </div>
+                                    {% empty %}
+                                        <div class="carousel-item active">
+                                            <img src="https://via.placeholder.com/400x250?text=No+Image" class="d-block w-100" alt="{{ room.name }}">
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <!-- Кнопки навигации -->
+                                {% if room.images.count > 1 %}
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselRoom{{ room.pk }}" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Предыдущий</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carouselRoom{{ room.pk }}" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon bg-dark rounded-circle" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Следующий</span>
+                                    </button>
+                                {% endif %}
+                            </div>
+
+                            <!-- Информация о комнате -->
+                            <div class="card-body">
+                                <h5 class="card-title">{{ room.name }}</h5>
+                                <p class="card-text text-muted"><strong>До {{ room.capacity }} гостей</strong></p>
+                                <p class="card-text">
+                                    <strong>Удобства:</strong>
+                                    <ul class="list-unstyled">
+                                        {% for amenity in room.amenities.split|default:"Нет данных" %}
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>{{ amenity }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </p>
+                                <p class="card-text">
+                                    <strong>Описание:</strong>
+                                    {% if room.description %}
+                                        {{ room.description }}
+                                    {% else %}
+                                        <em class="text-muted">Описание отсутствует</em>
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <!-- Цена и кнопка бронирования -->
+                            <div class="card-footer d-flex justify-content-between align-items-center bg-light">
+                                <span class="fw-bold text-primary">Цена за ночь: {{ room.price_per_night }} руб.</span>
+                                <a href="{% url 'book_room' room.pk check_in check_out guests %}" class="btn btn-outline-primary">Забронировать</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                <h4 class="alert-heading">Извините!</h4>
+                <p>В данный момент нет доступных комнат в этой категории.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

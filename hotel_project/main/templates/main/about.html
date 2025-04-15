@@ -1,0 +1,107 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!-- Заголовок и краткое описание -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">{{ title }}</h1>
+        <p class="lead">{{ description }}</p>
+    </div>
+</section>
+
+<!-- История отеля -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <img src="{% static 'images/about/history.jpg' %}" class="img-fluid rounded" alt="История отеля">
+            </div>
+            <div class="col-md-6">
+                <h2>Наша история</h2>
+                <p>Отель был основан в 2010 году с целью предоставить гостям максимальный комфорт и уют. Мы гордимся тем, что стали одним из лучших мест для отдыха в регионе.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Наши ценности -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Наши ценности</h2>
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <h4>Комфорт</h4>
+                <p>Мы создаем уютную атмосферу для каждого гостя.</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <h4>Забота</h4>
+                <p>Ваше удовлетворение — наш приоритет.</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <h4>Команда</h4>
+                <p>Профессиональный персонал всегда готов помочь.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Галерея изображений -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Фотогалерея</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <img src="{% static 'images/about/gallery1.jpg' %}" class="img-fluid rounded" alt="Галерея 1">
+            </div>
+            <div class="col-md-4">
+                <img src="{% static 'images/about/gallery2.jpg' %}" class="img-fluid rounded" alt="Галерея 2">
+            </div>
+            <div class="col-md-4">
+                <img src="{% static 'images/about/gallery3.jpg' %}" class="img-fluid rounded" alt="Галерея 3">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Наша команда -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Наша команда</h2>
+        <div class="row">
+            <div class="col-md-3 text-center">
+                <img src="{% static 'images/about/team1.jpg' %}" class="img-fluid rounded-circle mb-3" alt="Член команды 1">
+                <h5>Иван Иванов</h5>
+                <p>Менеджер</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <img src="{% static 'images/about/team2.jpg' %}" class="img-fluid rounded-circle mb-3" alt="Член команды 2">
+                <h5>Мария Петрова</h5>
+                <p>Администратор</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <img src="{% static 'images/about/team3.jpg' %}" class="img-fluid rounded-circle mb-3" alt="Член команды 3">
+                <h5>Алексей Сидоров</h5>
+                <p>Шеф-повар</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <img src="{% static 'images/about/team4.jpg' %}" class="img-fluid rounded-circle mb-3" alt="Член команды 4">
+                <h5>Елена Кузнецова</h5>
+                <p>Менеджер по обслуживанию</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Контакты и призыв к действию -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2>Свяжитесь с нами</h2>
+        <p>Хотите узнать больше? Свяжитесь с нами прямо сейчас!</p>
+        <p>По номеру: +79187778777</p>
+
+    </div>
+</section>
+{% endblock %}

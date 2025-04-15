@@ -1,68 +1,135 @@
 {% extends 'main/base.html' %}
 
-{% block title %}Профиль{% endblock %}
+{% block title %}Профиль пользователя{% endblock %}
 
 {% block content %}
+<!-- Заголовок страницы -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">Профиль пользователя</h1>
+        <p class="lead text-muted">Здесь вы можете изменить свои данные и просмотреть бронирования.</p>
+    </div>
+</section>
 
-<h2>Профиль пользователя</h2>
-
-<form method="post">
-    {% csrf_token %}
-    <h3>Данные пользователя</h3>
-    {{ user_form.as_p }}
-
-    <h3>Дополнительная информация</h3>
-    {{ profile_form.as_p }}
-
-    <button type="submit">Сохранить изменения</button>
-</form>
-
-<h2>Мои бронирования</h2>
-
-{% if bookings %}
-<ul>
-    {% for booking in bookings %}
-    <li>
-        {{ booking.room.name }} ({{ booking.check_in }} - {{ booking.check_out }}, Гостей: {{ booking.guests }})
-        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal{{ booking.id }}">
-            Отменить
-        </button>
-
-        <!-- Модальное окно для подтверждения -->
-        <div class="modal fade" id="cancelModal{{ booking.id }}" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="cancelModalLabel">Подтвердите отмену</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Форма редактирования профиля -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow border-0 rounded-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0">Редактирование данных</h3>
                     </div>
-                    <div class="modal-body">
-                        Вы уверены, что хотите отменить бронирование комнаты "{{ booking.room.name }}"?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <form method="post" action="{% url 'cancel_booking' booking.id %}" style="display: inline;">
+                    <div class="card-body">
+                        <form method="post">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">Да, отменить</button>
+                            <!-- Поля для UserUpdateForm -->
+                            <div class="mb-3">
+                                <label for="{{ user_form.username.id_for_label }}" class="form-label">Имя пользователя</label>
+                                {{ user_form.username }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ user_form.email.id_for_label }}" class="form-label">Email</label>
+                                {{ user_form.email }}
+                            </div>
+
+                            <!-- Поля для ProfileUpdateForm -->
+                            <div class="mb-3">
+                                <label for="{{ profile_form.first_name.id_for_label }}" class="form-label">Имя</label>
+                                {{ profile_form.first_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ profile_form.last_name.id_for_label }}" class="form-label">Фамилия</label>
+                                {{ profile_form.last_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ profile_form.phone_number.id_for_label }}" class="form-label">Номер телефона</label>
+                                {{ profile_form.phone_number }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ profile_form.passport_data.id_for_label }}" class="form-label">Паспортные данные</label>
+                                {{ profile_form.passport_data }}
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">Сохранить изменения</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>У вас нет бронирований.</p>
-{% endif %}
+    </div>
+</section>
 
-<a href="{% url 'home' %}">Вернуться на главную</a>
+<!-- Мои бронирования -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Мои бронирования</h2>
+        {% if bookings %}
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                {% for booking in bookings %}
+                    <div class="col">
+                        <div class="card h-100 shadow border-0 rounded-4">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ booking.room.name }}</h5>
+                                <p class="card-text"><strong>Дата заезда:</strong> {{ booking.check_in|date:"d.m.Y" }}</p>
+                                <p class="card-text"><strong>Дата выезда:</strong> {{ booking.check_out|date:"d.m.Y" }}</p>
+                                <p class="card-text"><strong>Гостей:</strong> {{ booking.guests }}</p>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+                                <span class="badge bg-info text-dark">{{ booking.get_status_display }}</span>
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal{{ booking.id }}">
+                                    Отменить
+                                </button>
+                            </div>
+                        </div>
 
+                        <!-- Модальное окно для подтверждения -->
+                        <div class="modal fade" id="cancelModal{{ booking.id }}" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="cancelModalLabel">Подтвердите отмену</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Вы уверены, что хотите отменить бронирование комнаты "{{ booking.room.name }}"?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        <form method="post" action="{% url 'cancel_booking' booking.id %}" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Да, отменить</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center" role="alert">
+                <h4 class="alert-heading">У вас пока нет бронирований!</h4>
+                <p>Оформите новое бронирование прямо сейчас.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Сообщения (если есть) -->
 {% if messages %}
-<div class="messages">
+<div class="container mt-4">
     {% for message in messages %}
-    <div class="alert alert-success">{{ message }}</div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     {% endfor %}
 </div>
 {% endif %}
+
+<!-- Кнопка возврата на главную -->
+<div class="container text-center mt-4">
+    <a href="{% url 'home' %}" class="btn btn-secondary btn-lg">Вернуться на главную</a>
+</div>
 {% endblock %}

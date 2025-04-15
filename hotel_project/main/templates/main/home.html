@@ -1,52 +1,132 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 {% block title %}Главная страница{% endblock %}
 
 {% block content %}
+<!-- Сообщения -->
 {% if messages %}
-<div class="messages">
+<div class="container mt-3">
     {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
         {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endfor %}
 </div>
 {% endif %}
-<div class="container text-center mt-5">
-    <!-- Заголовок -->
-    <h1 class="display-4 text-primary">Добро пожаловать в Отель Пуджа!</h1>
-    <p class="lead">Найдите идеальную комнату для вашего отдыха</p>
 
-    <!-- Форма быстрого подбора -->
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-10 col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h2 class="card-title text-center mb-4">Быстрая панель подбора комнат</h2>
-                    <form method="get" class="row g-3 align-items-center">
-                        <!-- Дата заезда -->
-                        <div class="col-auto">
-                            <label for="id_check_in" class="form-label visually-hidden">Дата заезда</label>
-                            {{ form.check_in }}
-                        </div>
-                        <!-- Дата выезда -->
-                        <div class="col-auto">
-                            <label for="id_check_out" class="form-label visually-hidden">Дата выезда</label>
-                            {{ form.check_out }}
-                        </div>
-                        <!-- Количество гостей -->
-                        <div class="col-auto">
-                            <label for="id_guests" class="form-label visually-hidden">Количество гостей</label>
-                            {{ form.guests }}
-                        </div>
-                        <!-- Кнопка -->
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-primary">Показать наличие</button>
-                        </div>
-                    </form>
+<!-- Секция: Герой (Hero Section) -->
+<section class="py-5 bg-primary text-white text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Добро пожаловать в Отель Пуджа!</h1>
+        <p class="lead">Найдите идеальную комнату для вашего отдыха</p>
+        <a href="#search" class="btn btn-light btn-lg">Начать поиск</a>
+    </div>
+</section>
+
+<!-- Секция: Форма поиска -->
+<section id="search" class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">Быстрая панель подбора комнат</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form method="get" class="row g-3 align-items-center">
+                            <!-- Дата заезда -->
+                            <div class="col-auto">
+                                <label for="id_check_in" class="form-label visually-hidden">Дата заезда</label>
+                                {{ form.check_in }}
+                            </div>
+                            <!-- Дата выезда -->
+                            <div class="col-auto">
+                                <label for="id_check_out" class="form-label visually-hidden">Дата выезда</label>
+                                {{ form.check_out }}
+                            </div>
+                            <!-- Количество гостей -->
+                            <div class="col-auto">
+                                <label for="id_guests" class="form-label visually-hidden">Количество гостей</label>
+                                {{ form.guests }}
+                            </div>
+                            <!-- Кнопка -->
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary">Показать наличие</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Секция: Преимущества отеля -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Почему выбирают нас?</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <!-- Удобства -->
+            <div class="col">
+                <div class="card h-100 text-center border-0">
+                    <i class="fas fa-bed fa-3x text-primary mb-3"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Удобные номера</h5>
+                        <p class="card-text">Наши номера оснащены всем необходимым для комфортного проживания.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Расположение -->
+            <div class="col">
+                <div class="card h-100 text-center border-0">
+                    <i class="fas fa-map-marker-alt fa-3x text-primary mb-3"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Отличное расположение</h5>
+                        <p class="card-text">Мы находимся в самом центре города, рядом с основными достопримечательностями.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Поддержка -->
+            <div class="col">
+                <div class="card h-100 text-center border-0">
+                    <i class="fas fa-headset fa-3x text-primary mb-3"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">24/7 Поддержка</h5>
+                        <p class="card-text">Наши сотрудники всегда готовы помочь вам в любое время суток.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция: Галерея -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Галерея нашего отеля</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <!-- Изображение 1 -->
+            <div class="col">
+                <img src="{% static 'images/about/gallery1.jpg' %}" class="img-fluid rounded shadow" alt="Номер 1">
+            </div>
+            <!-- Изображение 2 -->
+            <div class="col">
+                <img src="{% static 'images/about/gallery2.jpg' %}" class="img-fluid rounded shadow" alt="Номер 2">
+            </div>
+            <!-- Изображение 3 -->
+            <div class="col">
+                <img src="{% static 'images/about/gallery3.jpg' %}" class="img-fluid rounded shadow" alt="Номер 3">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция: Призыв к действию -->
+<section class="py-5 bg-primary text-white text-center">
+    <div class="container">
+        <h2 class="fw-bold">Готовы забронировать номер?</h2>
+        <p class="lead">Выберите даты и найдите идеальный номер для вашего отдыха.</p>
+        <a href="#search" class="btn btn-light btn-lg">Начать поиск</a>
+    </div>
+</section>
 {% endblock %}

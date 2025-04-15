@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from hotel.models import Room
 from .models import Booking
+from accounts.models import Profile
 from .forms import SearchForm, BookingForm
 from .utils import send_cancel_email
 from datetime import date
@@ -16,6 +17,12 @@ def home(request):
         guests = form.cleaned_data['guests']
         return redirect('search_results', check_in=check_in.isoformat(), check_out=check_out.isoformat(), guests=guests)
     return render(request, 'main/home.html', {'form': form})
+
+def about(request):
+    return render(request, 'main/about.html', {
+        'title': 'Об отеле',
+        'description': 'Узнайте больше о нашем отеле, нашей истории и наших ценностях.',
+    })
 
 # Отображает список доступных комнат
 def search_results(request, check_in, check_out, guests):
@@ -51,8 +58,8 @@ def book_room(request, room_id, check_in, check_out, guests):
             booking = form.save(commit=False)
             booking.room = room
             booking.user = request.user if request.user.is_authenticated else None
-            booking.save()
-
+            booking.check_in = check_in_date  # Добавляем дату заезда вручную
+            booking.check_out = check_out_date  # Добавляем дату выезда вручную
             booking.first_name = form.cleaned_data['first_name']
             booking.last_name = form.cleaned_data['last_name']
             booking.email = form.cleaned_data['email']
@@ -70,9 +77,20 @@ def book_room(request, room_id, check_in, check_out, guests):
             'check_out': check_out_date,
             'guests': guests,
         }
+        # Если пользователь авторизован, заполняем данные из профиля
+        if request.user.is_authenticated:
+            profile = getattr(request.user, 'profile', None)  # Получаем профиль пользователя
+            if profile:
+                initial_data.update({
+                    'first_name': profile.first_name or '',
+                    'last_name': profile.last_name or '',
+                    'email': request.user.email or '',
+                    'phone': profile.phone_number or '',
+                })
+
         form = BookingForm(initial=initial_data)
 
-    return render(request, 'main/book_room.html', {'form': form, 'room': room})
+    return render(request, 'main/book_room.html', {'form': form, 'room': room, 'check_in': check_in_date, 'check_out': check_out_date})
 
 @login_required
 def cancel_booking(request, booking_id):
