@@ -42,7 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'hotel',
     'main',
-    'accounts'
+    'accounts',
+    'api',
+    'bot',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('api.urls')), # Маршрут для API
     path('', include('main.urls')), # Маршрут для главной странице
     path('', include('hotel.urls')), # Маршрут для списка комнат
     path('accounts/', include('accounts.urls')), # Маршрут для регистрации, входа, выхода и профиля
